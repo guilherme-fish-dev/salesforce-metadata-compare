@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Salesforce Metadata Compare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+    <main class="app-shell">
+      <header class="hero">
+        <p class="kicker">Salesforce Metadata Compare</p>
+        <h1>Compare XML com contexto real</h1>
+        <p>
+          Cole o arquivo anterior e o novo. O app identifica o que foi adicionado,
+          removido, alterado e o que apenas mudou de lugar.
+        </p>
+      </header>
+
+      <section class="workspace">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Arquivo Esquerdo (Antes)</h2>
+            <button id="sampleLeft" class="ghost-btn">Exemplo Permission Set</button>
+          </div>
+          <textarea id="leftXml" spellcheck="false" placeholder="Cole aqui o XML do arquivo anterior..."></textarea>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Arquivo Direito (Depois)</h2>
+            <button id="sampleRight" class="ghost-btn">Exemplo Flow</button>
+          </div>
+          <textarea id="rightXml" spellcheck="false" placeholder="Cole aqui o XML do arquivo novo..."></textarea>
+        </div>
+      </section>
+
+      <section class="controls">
+        <button id="compareBtn" class="primary-btn">Comparar Agora</button>
+        <label class="checkbox-wrap">
+          <input type="checkbox" id="ignoreWhitespace" checked />
+          Ignorar espaçamento em nós de texto
+        </label>
+      </section>
+
+      <section id="summary" class="summary hidden"></section>
+
+      <section class="tabs">
+        <button class="tab-btn active" data-tab="semantic">Diff Semântico</button>
+        <button class="tab-btn" data-tab="raw">Diff Textual</button>
+        <button class="tab-btn" data-tab="flow">Flow Visual</button>
+        <button class="tab-btn" data-tab="ps">Schema Permission Set</button>
+      </section>
+
+      <section id="semantic" class="tab-content"></section>
+      <section id="raw" class="tab-content hidden"></section>
+      <section id="flow" class="tab-content hidden">
+        <div class="flow-toolbar">
+          <div class="flow-tools-main">
+            <button id="renderFlowBtn" class="ghost-btn">Gerar diagrama do Flow</button>
+            <div class="flow-mode-switch" role="group" aria-label="Modo de visualizacao do Flow">
+              <button id="flowModeDiffBtn" class="ghost-btn flow-mode-btn active">Diff</button>
+              <button id="flowModeSplitBtn" class="ghost-btn flow-mode-btn">Lado a lado</button>
+            </div>
+          </div>
+          <div class="flow-tools-extra">
+            <button id="zoomOutBtn" class="ghost-btn flow-btn" title="Diminuir zoom">-</button>
+            <button id="zoomInBtn" class="ghost-btn flow-btn" title="Aumentar zoom">+</button>
+            <button id="fitFlowBtn" class="ghost-btn">Ajustar</button>
+            <button id="resetFlowBtn" class="ghost-btn">Reset</button>
+            <button id="fullscreenFlowBtn" class="ghost-btn">Tela cheia</button>
+          </div>
+        </div>
+        <p class="flow-hint">Use o mouse para arrastar, rolagem para zoom e os botões para ajustar a visualização.</p>
+        <div id="flowView" class="flow-view"></div>
+      </section>
+      <section id="ps" class="tab-content hidden"></section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/diff@5.2.0/dist/diff.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.29.2/dist/cytoscape.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dagre@0.8.5/dist/dagre.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
