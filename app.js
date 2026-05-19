@@ -60,6 +60,8 @@ const PERMISSION_SET_KEYS = {
   flowAccesses: ["flow"]
 };
 
+const COMMON_IDENTIFIER_TAGS = ["fullName", "name", "id", "key"];
+
 ui.tabs.forEach((tab) => {
   tab.addEventListener("click", () => activateTab(tab.dataset.tab));
 });
@@ -486,9 +488,9 @@ function getChildText(element, tagName) {
   return child ? normalizeText(child.textContent || "") : "";
 }
 
-function getSemanticKey(tagName, element, fallbackIndex) {
+function getSemanticKey(tagName, element) {
+  // Tier 1: explicit per-type key mappings (e.g. Permission Set collections)
   const keyCandidates = PERMISSION_SET_KEYS[tagName];
-
   if (keyCandidates) {
     for (const keyTag of keyCandidates) {
       const value = getChildText(element, keyTag);
@@ -498,7 +500,16 @@ function getSemanticKey(tagName, element, fallbackIndex) {
     }
   }
 
-  return `${tagName}:#${fallbackIndex}:${makeFingerprint(element)}`;
+  // Tier 2: common stable identifier child tags (covers standardValueSet, customLabels, etc.)
+  for (const childTag of COMMON_IDENTIFIER_TAGS) {
+    const value = getChildText(element, childTag);
+    if (value) {
+      return `${tagName}:${childTag}=${value}`;
+    }
+  }
+
+  // Tier 3: order-insensitive fingerprint fallback (no positional index)
+  return `${tagName}:fingerprint:${makeFingerprint(element)}`;
 }
 
 function buildSemanticDiff(leftDoc, rightDoc) {
@@ -516,13 +527,13 @@ function buildSemanticDiff(leftDoc, rightDoc) {
     const rightItems = right.map.get(tagName) || [];
 
     const leftByKey = new Map();
-    leftItems.forEach((item, i) => {
-      leftByKey.set(getSemanticKey(tagName, item.element, i), item);
+    leftItems.forEach((item) => {
+      leftByKey.set(getSemanticKey(tagName, item.element), item);
     });
 
     const rightByKey = new Map();
-    rightItems.forEach((item, i) => {
-      rightByKey.set(getSemanticKey(tagName, item.element, i), item);
+    rightItems.forEach((item) => {
+      rightByKey.set(getSemanticKey(tagName, item.element), item);
     });
 
     const keys = new Set([...leftByKey.keys(), ...rightByKey.keys()]);
